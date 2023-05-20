@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ShortLink.EntityFramework.Entities
 {
     public partial class Url
     {
-        public string Id { get; set; }
+        [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity), Key()]
+        public int Id { get; set; }
         public string Hash { get; set; }
         public string OriginalUrl { get; set; }
         public string Title { get; set; }

@@ -2,6 +2,6 @@ namespace ShortLink.EntityFramework.Base
 {
     public interface IBaseEntities
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
     }
 }

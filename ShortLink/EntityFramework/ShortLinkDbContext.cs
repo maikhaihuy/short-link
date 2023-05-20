@@ -8,9 +8,9 @@ namespace ShortLink.EntityFramework
 {
     public partial class ShortLinkDbContext : DbContext
     {
-        public ShortLinkDbContext()
-        {
-        }
+        //public ShortLinkDbContext()
+        //{
+        //}
 
         public ShortLinkDbContext(DbContextOptions<ShortLinkDbContext> options)
             : base(options)
@@ -18,6 +18,7 @@ namespace ShortLink.EntityFramework
         }
 
         public virtual DbSet<Account> Accounts { get; set; }
+        public virtual DbSet<Token> Tokens { get; set; }
         public virtual DbSet<Url> Urls { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -34,10 +35,9 @@ namespace ShortLink.EntityFramework
             modelBuilder.Entity<Account>(entity =>
             {
                 entity.ToTable("Account");
+                entity.HasKey(e => e.Id);
 
-                entity.Property(e => e.Id)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
+                entity.Property(e => e.Id);
 
                 entity.Property(e => e.CreatedBy)
                     .HasMaxLength(255)
@@ -70,13 +70,46 @@ namespace ShortLink.EntityFramework
                     .IsUnicode(false);
             });
 
+            modelBuilder.Entity<Token>(entity =>
+            {
+                entity.ToTable("Token");
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id);
+
+                entity.Property(e => e.CreatedBy)
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CreatedDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.UpdatedBy)
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.UpdatedDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.AccessToken)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.RefreshToken)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.HasOne(e => e.Account);
+            });
+
             modelBuilder.Entity<Url>(entity =>
             {
                 entity.ToTable("Url");
+                entity.HasKey(e => e.Id);
 
-                entity.Property(e => e.Id)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
+                entity.Property(e => e.Id);
 
                 entity.Property(e => e.CreatedBy)
                     .HasMaxLength(255)

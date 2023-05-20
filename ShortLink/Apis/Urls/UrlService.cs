@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
+using System.Data;
+
 using AutoMapper;
 using ShortLink.Base;
 using ShortLink.Common.Helpers;
@@ -23,7 +26,7 @@ namespace ShortLink.Apis.Urls
             // validate
             
             // prepare
-            int timestampNow = DateTimeHelpers.GetTimestamp(DateTime.UtcNow);
+            long timestampNow = DateTimeHelpers.GetTimestamp(DateTime.UtcNow);
             string hash = ShortenerHelpers.Base10ToBase62(timestampNow);
             Url url = new()
             {
@@ -36,13 +39,27 @@ namespace ShortLink.Apis.Urls
             await DbContext.SaveChangesAsync();
 
             // transfer
-            var urlModel = _mapper.Map<UrlModel>(urlEntry);
+            var urlModel = _mapper.Map<UrlModel>(urlEntry.Entity);
             return urlModel;
         }
 
-        public Task<UrlModel> UnShorten(UnShortenParam unShortenParam)
+        public async Task<UrlModel> UnShorten(UnShortenParam unShortenParam)
         {
-            throw new NotImplementedException();
+            // validate
+
+            // prepare
+            long timestampHash = ShortenerHelpers.Base62ToBase10(unShortenParam.Hash);
+
+            // execute
+            Url url = DbContext.Urls.Where(u => u.Hash == unShortenParam.Hash).FirstOrDefault();
+            if (url is null)
+            {
+                throw new KeyNotFoundException();
+            }
+
+            // transfer
+            var urlModel = _mapper.Map<UrlModel>(url);
+            return urlModel;
         }
 
         public async Task<UrlModel> UpdateMetaData(UpdateMetaDataParam updateMetaDataParam)
@@ -53,16 +70,14 @@ namespace ShortLink.Apis.Urls
                 throw new KeyNotFoundException($"{updateMetaDataParam.Id} not found!");
 
             // prepare
-            url.Title = updateMetaDataParam.Title;
-            url.Thumbnail = updateMetaDataParam.Thumbnail;
-            url.Description = updateMetaDataParam.Description;
+            url = _mapper.Map<Url>(updateMetaDataParam);
             
             // execute
             var urlEntry = DbContext.Urls.Update(url);
             await DbContext.SaveChangesAsync();
             
             // transfer
-            var urlModel = _mapper.Map<UrlModel>(urlEntry);
+            var urlModel = _mapper.Map<UrlModel>(urlEntry.Entity);
             return urlModel;
         }
     }

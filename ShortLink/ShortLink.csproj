@@ -4,6 +4,11 @@
         <TargetFramework>net6.0</TargetFramework>
         <RootNamespace>ShortLink</RootNamespace>
     </PropertyGroup>
+
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <Exec Command="dotnet swagger tofile --output swagger.json $(OutputPath)\$(AssemblyName).dll v1 " />
+    </Target>
+
     <ItemGroup>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.6">
             <PrivateAssets>all</PrivateAssets>
@@ -18,9 +23,12 @@
 
     <ItemGroup>
       <None Remove="DataAccess\" />
+      <None Remove="EntityFramework\Migrations\" />
+      <None Remove="EntityFramework\Entities\Token.Extended" />
     </ItemGroup>
 
     <ItemGroup>
       <Folder Include="Utils" />
+      <Folder Include="EntityFramework\Migrations\" />
     </ItemGroup>
 </Project>

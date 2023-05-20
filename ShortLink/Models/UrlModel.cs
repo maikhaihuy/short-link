@@ -4,7 +4,7 @@ namespace ShortLink.Models
 {
     public class UrlModel
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
         public string Hash { get; set; }
         public string OriginalUrl { get; set; }
         public string Title { get; set; }
