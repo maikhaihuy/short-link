@@ -3,5 +3,6 @@
 /ShortLink.Test/bin/
 /ShortLink.Test/obj/
 /.idea
+/.vs
 bin/
 obj/
